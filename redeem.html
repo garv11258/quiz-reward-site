@@ -1,51 +1,29 @@
-
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Redeem</title>
-</head>
-<body>
-  <h2>Redeem Points</h2>
-  <p id="points">Loading...</p>
-  <input type="text" id="upi" placeholder="Enter your UPI ID" />
-  <button onclick="redeem()">Redeem ₹50</button>
-
-  <script type="module">
-    import { auth, db } from './firebase.js';
-    import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
-    import { doc, getDoc, updateDoc, arrayUnion } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
-
-    let currentUser = null;
-    let userRef;
-
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        currentUser = user;
-        userRef = doc(db, "users", user.uid);
-        const docSnap = await getDoc(userRef);
-        const points = docSnap.data().points || 0;
-        document.getElementById("points").innerText = "Your points: " + points;
-      }
-    });
-
-    window.redeem = async function () {
-      const upi = document.getElementById("upi").value;
-      if (!upi) return alert("Please enter your UPI ID.");
-
-      const docSnap = await getDoc(userRef);
-      const points = docSnap.data().points;
-
-      if (points >= 5000) {
-        await updateDoc(userRef, {
-          points: points - 5000,
-          redemptions: arrayUnion({ upi, amount: 50, date: new Date().toISOString() })
-        });
-        alert("Redemption request sent. Admin will verify and pay ₹50 to " + upi);
-        location.reload();
-      } else {
-        alert("Not enough points.");
-      }
+  <title>Redeem Rewards</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #00b894, #0984e3);
+      color: white;
+      text-align: center;
+      padding: 40px;
     }
-  </script>
-</body>
-</html>
+    h1 {
+      font-size: 38px;
+    }
+    #score, #reward {
+      font-size: 28px;
+      margin: 20px;
+    }
+    button {
+      font-size: 22px;
+      padding: 10px 25px;
+      background: #fd79a8;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
