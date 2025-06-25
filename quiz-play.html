@@ -1,0 +1,89 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Quiz Play</title>
+  <style>
+    body { font-family: sans-serif; background: #f4f4f4; text-align: center; padding: 20px; }
+    #question { font-size: 24px; margin-bottom: 20px; }
+    .option { padding: 10px; background: #eee; margin: 10px; border: 1px solid #ccc; cursor: pointer; }
+    .option:hover { background: #ddd; }
+    #timer { font-size: 20px; color: red; }
+    #score { font-size: 18px; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <h1>🎯 Quiz Time</h1>
+  <div id="info"></div>
+  <div id="question"></div>
+  <div id="options"></div>
+  <div id="timer">⏱ Time Left: <span id="time">10</span>s</div>
+  <div id="score"></div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const topic = urlParams.get("topic");
+    const classLevel = urlParams.get("class");
+
+    let questions = [];
+    let index = 0;
+    let score = 0;
+    let timerInterval;
+
+    fetch("quiz_questions.json")
+      .then(response => response.json())
+      .then(data => {
+        questions = data[topic];
+        if (!questions) {
+          document.getElementById("info").innerText = "No questions found for this topic.";
+          return;
+        }
+        document.getElementById("info").innerText = `Topic: ${topic} | Class: ${classLevel}`;
+        showQuestion();
+      });
+
+    function showQuestion() {
+      if (index >= questions.length) {
+        document.getElementById("question").innerText = "Quiz Finished!";
+        document.getElementById("options").innerHTML = "";
+        document.getElementById("timer").style.display = "none";
+        document.getElementById("score").innerText = `Final Score: ${score}`;
+        return;
+      }
+
+      const q = questions[index];
+      document.getElementById("question").innerText = q.question;
+      document.getElementById("options").innerHTML = "";
+      q.options.forEach(opt => {
+        const btn = document.createElement("div");
+        btn.className = "option";
+        btn.innerText = opt;
+        btn.onclick = () => {
+          clearInterval(timerInterval);
+          if (opt === q.answer) score += 100;
+          index++;
+          showQuestion();
+        };
+        document.getElementById("options").appendChild(btn);
+      });
+
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = 10;
+      document.getElementById("time").innerText = timeLeft;
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        document.getElementById("time").innerText = timeLeft;
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          index++;
+          showQuestion();
+        }
+      }, 1000);
+    }
+  </script>
+</body>
+</html>
