@@ -1,67 +1,142 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
   <title>Redeem Points</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #141e30, #243b55);
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #1f4037, #99f2c8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
       color: white;
-      text-align: center;
+    }
+
+    .container {
+      background-color: rgba(0, 0, 0, 0.6);
       padding: 30px;
+      border-radius: 15px;
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
     }
-    .box {
-      background: rgba(255, 255, 255, 0.1);
-      padding: 20px;
-      margin: auto;
-      border-radius: 10px;
-      max-width: 500px;
+
+    h2 {
+      margin-bottom: 20px;
+      color: #ffd700;
     }
+
     input, button {
-      padding: 10px;
+      width: 90%;
+      padding: 12px;
       margin-top: 15px;
       font-size: 16px;
-      width: 80%;
+      border: none;
+      border-radius: 8px;
     }
-    h2 {
-      color: #f1c40f;
+
+    input {
+      background-color: #f1f1f1;
+      color: #333;
+    }
+
+    button {
+      background-color: #28a745;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #218838;
+    }
+
+    #message {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    a {
+      color: #fbc531;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    a:hover {
+      text-decoration: underline;
     }
   </style>
+
+  <script>
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyBarP9CByaYu6NotuNQcZt_gGyWPjoByLM",
+      authDomain: "quiz-reward-67257.firebaseapp.com",
+      projectId: "quiz-reward-67257",
+      storageBucket: "quiz-reward-67257.appspot.com",
+      messagingSenderId: "186940425104",
+      appId: "1:186940425104:web:037923ac55b01258b02915",
+      measurementId: "G-7RL385RJMY"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+  </script>
 </head>
 <body>
-  <div class="box">
-    <h2>🎉 Redeem Your Points</h2>
-    <p id="scoreText">Loading...</p>
+  <div class="container">
+    <h2>🎁 Redeem Your Points</h2>
+    <p id="scoreText">Loading your score...</p>
 
-    <input type="text" id="upi" placeholder="Enter your UPI ID" />
-    <br />
-    <button onclick="redeem()">Redeem</button>
+    <input type="text" id="upi" placeholder="Enter your UPI ID (e.g., name@upi)">
+    <button onclick="redeem()">Redeem ₹50</button>
 
     <p id="message"></p>
-
-    <hr />
-    <p><a href="tutorial.html" style="color: #f39c12;">How to Redeem (Tutorial)</a></p>
+    <hr>
+    <a href="tutorial.html">How to redeem? (Tutorial)</a>
   </div>
 
   <script>
+    // Show current score
     const score = localStorage.getItem("finalScore") || 0;
     document.getElementById("scoreText").textContent = `Your Score: ${score}`;
 
     function redeem() {
-      const upi = document.getElementById("upi").value;
+      const upi = document.getElementById("upi").value.trim();
       const message = document.getElementById("message");
 
-      if (!upi.includes("@")) {
-        message.textContent = "❌ Invalid UPI!";
+      if (!upi || !upi.includes("@")) {
+        message.textContent = "❌ Please enter a valid UPI ID!";
         return;
       }
 
       if (score < 5000) {
-        message.textContent = "⚠️ You need 5000 points to redeem ₹50.";
+        message.textContent = "⚠️ You need at least 5000 points to redeem ₹50.";
         return;
       }
 
-      message.textContent = "✅ Request submitted! Payment will be reviewed.";
+      db.collection("redeemRequests").add({
+        upi: upi,
+        points: Number(score),
+        timestamp: new Date().toISOString()
+      })
+      .then(() => {
+        message.textContent = "✅ Your redeem request was sent successfully!";
+      })
+      .catch((error) => {
+        console.error("Error adding request: ", error);
+        message.textContent = "❌ Error submitting redeem request.";
+      });
     }
   </script>
 </body>
