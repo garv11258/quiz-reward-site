@@ -1,0 +1,29 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Leaderboard</title>
+</head>
+<body>
+  <h2>Top Users</h2>
+  <ul id="leaderboard"></ul>
+
+  <script type="module">
+    import { db } from './firebase.js';
+    import { collection, getDocs, query, orderBy, limit } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+
+    async function loadLeaderboard() {
+      const q = query(collection(db, "users"), orderBy("points", "desc"), limit(10));
+      const snapshot = await getDocs(q);
+      const list = document.getElementById("leaderboard");
+      snapshot.forEach(doc => {
+        const li = document.createElement("li");
+        li.textContent = doc.data().name + " - " + doc.data().points + " pts";
+        list.appendChild(li);
+      });
+    }
+
+    loadLeaderboard();
+  </script>
+</body>
+</html>

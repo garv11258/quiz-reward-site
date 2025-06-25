@@ -1,0 +1,55 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dashboard</title>
+</head>
+<body>
+  <h2>Welcome!</h2>
+  <p id="points">Loading points...</p>
+  <button onclick="startQuiz()">Take Quiz</button>
+  <button onclick="redeem()">Redeem Points</button>
+
+  <script type="module">
+    import { auth, db } from './firebase.js';
+    import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
+    import { doc, getDoc, setDoc, updateDoc, increment } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+
+    let currentUser = null;
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        currentUser = user;
+        const userRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(userRef);
+        if (!docSnap.exists()) {
+          await setDoc(userRef, { points: 0 });
+          document.getElementById("points").innerText = "Points: 0";
+        } else {
+          document.getElementById("points").innerText = "Points: " + docSnap.data().points;
+        }
+      } else {
+        window.location.href = "login.html";
+      }
+    });
+
+    window.startQuiz = function () {
+      window.location.href = "quiz.html";
+    }
+
+    window.redeem = async function () {
+      if (!currentUser) return;
+      const userRef = doc(db, "users", currentUser.uid);
+      const docSnap = await getDoc(userRef);
+      const points = docSnap.data().points;
+      if (points >= 5000) {
+        alert("Redeemed ₹50! (This should notify admin manually for now.)");
+        await updateDoc(userRef, { points: points - 5000 });
+        location.reload();
+      } else {
+        alert("You need at least 5000 points to redeem ₹50.");
+      }
+    }
+  </script>
+</body>
+</html>
