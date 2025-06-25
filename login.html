@@ -1,33 +1,35 @@
-
 <!DOCTYPE html>
 <html>
 <head>
   <title>Login</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #ffeaa7;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    input, button {
+      padding: 10px;
+      font-size: 18px;
+      margin: 10px;
+      border-radius: 5px;
+    }
+  </style>
 </head>
 <body>
-  <h2>Login or Signup</h2>
-  <input id="email" type="email" placeholder="Email"><br>
-  <input id="password" type="password" placeholder="Password"><br>
-  <button onclick="login()">Login</button>
-  <button onclick="signup()">Signup</button>
+  <h1>Enter your name</h1>
+  <input type="text" id="username" placeholder="Your name" />
+  <button onclick="startGame()">Continue</button>
 
-  <script type="module">
-    import { auth } from './firebase.js';
-    import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
-
-    const email = document.getElementById("email");
-    const password = document.getElementById("password");
-
-    window.login = function () {
-      signInWithEmailAndPassword(auth, email.value, password.value)
-        .then(() => window.location.href = "dashboard.html")
-        .catch(e => alert("Login Error: " + e.message));
-    }
-
-    window.signup = function () {
-      createUserWithEmailAndPassword(auth, email.value, password.value)
-        .then(() => window.location.href = "dashboard.html")
-        .catch(e => alert("Signup Error: " + e.message));
+  <script>
+    function startGame() {
+      const name = document.getElementById('username').value;
+      localStorage.setItem('playerName', name);
+      window.location.href = 'quiz.html';
     }
   </script>
 </body>
