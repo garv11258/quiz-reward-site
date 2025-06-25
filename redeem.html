@@ -1,154 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Redeem Your Reward</title>
+  <meta charset="UTF-8">
+  <title>Redeem Points</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #6c5ce7, #00cec9);
-      color: white;
+      background: linear-gradient(to right, #2b5876, #4e4376);
+      font-family: Arial, sans-serif;
+      color: #fff;
+      padding: 30px;
       text-align: center;
-      padding: 40px;
     }
-    h1 {
-      font-size: 36px;
+    .box {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 600px;
+      margin: auto;
     }
-    #score, #reward {
-      font-size: 24px;
-      margin: 20px;
-    }
-    input {
-      padding: 12px;
-      font-size: 18px;
-      width: 250px;
+    input, button {
+      padding: 10px;
+      width: 90%;
+      margin: 10px 0;
+      border-radius: 5px;
       border: none;
-      border-radius: 6px;
+      font-size: 16px;
     }
-    button {
+    .info {
+      background: #1abc9c;
+      padding: 10px;
+      border-radius: 5px;
       margin-top: 20px;
-      padding: 12px 24px;
-      font-size: 20px;
-      background-color: #fd79a8;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #e84393;
-    }
-    .leaderboard {
-      margin-top: 40px;
-    }
-    .leaderboard h2 {
-      font-size: 28px;
-    }
-    ul {
-      list-style: none;
-      padding: 0;
-      font-size: 20px;
     }
   </style>
 </head>
 <body>
+  <div class="box">
+    <h1>🎉 Redeem Your Reward</h1>
+    <h2>Your Score: <span id="score">0</span> Points</h2>
 
-  <h1>🎉 Quiz Completed!</h1>
-  <div id="score"></div>
-  <div id="reward"></div>
+    <div id="redeemSection" style="display:none;">
+      <h3>Enter your UPI ID to receive ₹</h3>
+      <input type="text" id="upi" placeholder="example@upi" />
+      <button onclick="redeem()">Redeem</button>
+    </div>
 
-  <div id="redeemForm" style="display: none;">
-    <h3>Enter your UPI ID to get ₹<span id="redeemAmount"></span></h3>
-    <input type="text" id="upiInput" placeholder="example@upi"><br>
-    <button onclick="submitUPI()">Submit UPI</button>
+    <div class="info">
+      <h3>🧾 How It Works:</h3>
+      <p>🎯 Each correct answer = 100 points</p>
+      <p>🏁 Reach 5000 points to redeem ₹50</p>
+      <p>💸 UPI Payment will be processed manually</p>
+    </div>
   </div>
-
-  <div class="leaderboard">
-    <h2>🏆 Top Players</h2>
-    <ul id="leaders"></ul>
-  </div>
-
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js"></script>
 
   <script>
-    // Firebase config
-    const firebaseConfig = {
-      apiKey: "AIzaSyBarP9CByaYu6NotuNQcZt_gGyWPjoByLM",
-      authDomain: "quiz-reward-67257.firebaseapp.com",
-      databaseURL: "https://quiz-reward-67257-default-rtdb.firebaseio.com",
-      projectId: "quiz-reward-67257",
-      storageBucket: "quiz-reward-67257.appspot.com",
-      messagingSenderId: "186940425104",
-      appId: "1:186940425104:web:037923ac55b01258b02915",
-      measurementId: "G-7RL385RJMY"
-    };
+    const score = localStorage.getItem("finalScore") || 0;
+    document.getElementById("score").innerText = score;
 
-    // Init Firebase
-    const app = firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
-    // Get user data
-    const name = localStorage.getItem('playerName') || "Player";
-    const score = parseInt(localStorage.getItem('finalScore')) || 0;
-    document.getElementById('score').textContent = `${name}, you scored ${score} points`;
-
-    // Calculate reward
-    let money = 0;
-    if (score >= 10000) money = 100;
-    else if (score >= 5000) money = 50;
-
-    if (money > 0) {
-      document.getElementById('reward').textContent = `🎁 You earned ₹${money}!`;
-      document.getElementById('redeemAmount').textContent = money;
-      document.getElementById('redeemForm').style.display = 'block';
-    } else {
-      document.getElementById('reward').textContent = `😞 You need at least 5000 points to redeem.`;
+    if (score >= 5000) {
+      document.getElementById("redeemSection").style.display = "block";
     }
 
-    // Submit UPI
-    function submitUPI() {
-      const upi = document.getElementById('upiInput').value.trim();
-      if (!upi.includes('@')) {
-        alert('Please enter a valid UPI ID.');
-        return;
-      }
+    function redeem() {
+      const upi = document.getElementById("upi").value.trim();
+      if (!upi) return alert("Please enter a valid UPI ID");
 
-      const redeemRef = db.ref("redeemRequests");
-      const data = {
-        name: name,
-        upi: upi,
-        score: score,
-        reward: money,
-        date: new Date().toLocaleString()
-      };
-
-      redeemRef.push(data)
-        .then(() => {
-          alert('🎉 Your UPI was submitted! You will receive the reward shortly.');
-          document.getElementById('redeemForm').innerHTML = `<h3>Thank you! ✅</h3>`;
-        })
-        .catch(err => {
-          alert("❌ Error saving to Firebase: " + err.message);
-        });
+      // Simulated save (replace with Firebase later)
+      alert("Your request to redeem ₹50 has been submitted!\nUPI ID: " + upi);
     }
-
-    // Leaderboard
-    let board = JSON.parse(localStorage.getItem('leaderboard')) || [];
-    board.push({ name, score });
-    board.sort((a, b) => b.score - a.score);
-    board = board.slice(0, 5);
-    localStorage.setItem('leaderboard', JSON.stringify(board));
-
-    const list = document.getElementById('leaders');
-    board.forEach(player => {
-      const li = document.createElement('li');
-      li.textContent = `${player.name}: ${player.score} pts`;
-      list.appendChild(li);
-    });
   </script>
-
 </body>
 </html>
