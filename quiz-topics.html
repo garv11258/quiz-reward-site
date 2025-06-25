@@ -1,0 +1,115 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>🎯 Select Your Quiz Topic</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #6dd5ed, #2193b0);
+      color: #fff;
+      text-align: center;
+      padding: 40px 10px;
+      margin: 0;
+    }
+
+    h1 {
+      font-size: 40px;
+      margin-bottom: 20px;
+      animation: glow 2s infinite alternate;
+    }
+
+    @keyframes glow {
+      from { text-shadow: 0 0 10px #fff; }
+      to { text-shadow: 0 0 20px #ffcc00, 0 0 30px #ffcc00; }
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 15px;
+    }
+
+    select, button.topic-btn {
+      padding: 12px;
+      font-size: 18px;
+      margin: 8px;
+      width: 46%;
+      border: none;
+      border-radius: 8px;
+    }
+
+    select {
+      background: #fff;
+      color: #333;
+    }
+
+    .topic-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .topic-btn {
+      background: #f39c12;
+      color: #fff;
+      cursor: pointer;
+      transition: transform 0.2s, background 0.3s;
+    }
+
+    .topic-btn:hover {
+      background: #e67e22;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>✨ Choose a Quiz Topic</h1>
+    <div class="class-select">
+      <label for="classSelect" style="font-size: 20px;">📚 Select Class:</label><br>
+      <select id="classSelect">
+        <option value="1">Class 1</option>
+        <option value="2">Class 2</option>
+        <option value="3">Class 3</option>
+        <option value="4">Class 4</option>
+        <option value="5">Class 5</option>
+        <option value="6">Class 6</option>
+        <option value="7">Class 7</option>
+        <option value="8">Class 8</option>
+        <option value="9">Class 9</option>
+        <option value="10">Class 10</option>
+        <option value="11">Class 11</option>
+        <option value="12">Class 12</option>
+      </select>
+    </div>
+
+    <div class="topic-grid" id="topics"></div>
+  </div>
+
+  <script>
+    const topics = [
+      "Algebra", "Geometry", "Probability", "Fractions", "Time & Work",
+      "Area & Volume", "Number System", "Mensuration", "Decimals", "HCF/LCM",
+      "Percentage", "Ratio & Proportion", "Equations", "Integers",
+      "Profit & Loss", "Perimeter", "Square Roots", "Data Handling",
+      "Trigonometry", "Graphs"
+    ];
+
+    const container = document.getElementById("topics");
+    topics.forEach(topic => {
+      const btn = document.createElement("button");
+      btn.className = "topic-btn";
+      btn.innerText = topic;
+      btn.onclick = () => {
+        const selectedClass = document.getElementById("classSelect").value;
+        window.location.href = `quiz-play.html?class=${selectedClass}&topic=${encodeURIComponent(topic)}`;
+      };
+      container.appendChild(btn);
+    });
+  </script>
+</body>
+</html>
