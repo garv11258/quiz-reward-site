@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Redeem Points</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #141e30, #243b55);
+      color: white;
+      text-align: center;
+      padding: 30px;
+    }
+    .box {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      margin: auto;
+      border-radius: 10px;
+      max-width: 500px;
+    }
+    input, button {
+      padding: 10px;
+      margin-top: 15px;
+      font-size: 16px;
+      width: 80%;
+    }
+    h2 {
+      color: #f1c40f;
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h2>🎉 Redeem Your Points</h2>
+    <p id="scoreText">Loading...</p>
+
+    <input type="text" id="upi" placeholder="Enter your UPI ID" />
+    <br />
+    <button onclick="redeem()">Redeem</button>
+
+    <p id="message"></p>
+
+    <hr />
+    <p><a href="tutorial.html" style="color: #f39c12;">How to Redeem (Tutorial)</a></p>
+  </div>
+
+  <script>
+    const score = localStorage.getItem("finalScore") || 0;
+    document.getElementById("scoreText").textContent = `Your Score: ${score}`;
+
+    function redeem() {
+      const upi = document.getElementById("upi").value;
+      const message = document.getElementById("message");
+
+      if (!upi.includes("@")) {
+        message.textContent = "❌ Invalid UPI!";
+        return;
+      }
+
+      if (score < 5000) {
+        message.textContent = "⚠️ You need 5000 points to redeem ₹50.";
+        return;
+      }
+
+      message.textContent = "✅ Request submitted! Payment will be reviewed.";
+    }
+  </script>
+</body>
+</html>
