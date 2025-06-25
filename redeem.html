@@ -17,6 +17,13 @@
       font-size: 28px;
       margin: 20px;
     }
+    input {
+      padding: 10px;
+      font-size: 18px;
+      border-radius: 8px;
+      border: none;
+      width: 250px;
+    }
     button {
       font-size: 22px;
       padding: 10px 25px;
@@ -27,3 +34,95 @@
       cursor: pointer;
       margin-top: 20px;
     }
+    button:hover {
+      background: #e84393;
+    }
+    .leaderboard {
+      margin-top: 40px;
+      text-align: center;
+    }
+    .leaderboard h2 {
+      font-size: 30px;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎉 Quiz Completed!</h1>
+  <div id="score"></div>
+  <div id="reward"></div>
+
+  <div id="redeemForm" style="display: none;">
+    <h3>Enter your UPI ID to receive Rs <span id="redeemAmount"></span></h3>
+    <input type="text" id="upiInput" placeholder="example@upi"><br><br>
+    <button onclick="submitUPI()">Submit UPI</button>
+  </div>
+
+  <div class="leaderboard">
+    <h2>🏆 Leaderboard</h2>
+    <ul id="leaders"></ul>
+  </div>
+
+  <script>
+    const name = localStorage.getItem('playerName');
+    const score = localStorage.getItem('finalScore') || 0;
+    document.getElementById('score').textContent = `${name}, you scored ${score} points`;
+
+    let money = 0;
+    if (score >= 10000) money = 100;
+    else if (score >= 5000) money = 50;
+    else money = 0;
+
+    document.getElementById('reward').textContent = money > 0
+      ? `You earned Rs ${money}!`
+      : "Not enough points to redeem.";
+
+    if (money > 0) {
+      document.getElementById('redeemForm').style.display = 'block';
+      document.getElementById('redeemAmount').textContent = money;
+    }
+
+    function submitUPI() {
+      const upi = document.getElementById('upiInput').value.trim();
+      if (!upi.includes('@')) {
+        alert('❌ Please enter a valid UPI ID.');
+        return;
+      }
+
+      alert(`✅ UPI ID "${upi}" submitted. You will receive ₹${money} soon.`);
+
+      // Save redeem request locally (simulate)
+      let requests = JSON.parse(localStorage.getItem('redeemRequests')) || [];
+      requests.push({
+        name,
+        upi,
+        score,
+        money,
+        date: new Date().toLocaleString()
+      });
+      localStorage.setItem('redeemRequests', JSON.stringify(requests));
+
+      document.getElementById('redeemForm').innerHTML =
+        `<h3>🎁 Thank you! Your redeem request is recorded.</h3>`;
+    }
+
+    // Leaderboard logic
+    let board = JSON.parse(localStorage.getItem('leaderboard')) || [];
+    board.push({ name, score });
+    board.sort((a, b) => b.score - a.score);
+    board = board.slice(0, 5);
+    localStorage.setItem('leaderboard', JSON.stringify(board));
+
+    const leaderList = document.getElementById('leaders');
+    board.forEach(entry => {
+      const li = document.createElement('li');
+      li.textContent = `${entry.name}: ${entry.score} pts`;
+      leaderList.appendChild(li);
+    });
+  </script>
+</body>
+</html>
