@@ -1,72 +1,65 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
   <title>Redeem Points</title>
   <style>
     body {
-      background: linear-gradient(to right, #2b5876, #4e4376);
       font-family: Arial, sans-serif;
-      color: #fff;
-      padding: 30px;
+      background: linear-gradient(135deg, #141e30, #243b55);
+      color: white;
       text-align: center;
+      padding: 30px;
     }
     .box {
       background: rgba(255, 255, 255, 0.1);
       padding: 20px;
-      border-radius: 10px;
-      max-width: 600px;
       margin: auto;
+      border-radius: 10px;
+      max-width: 500px;
     }
     input, button {
       padding: 10px;
-      width: 90%;
-      margin: 10px 0;
-      border-radius: 5px;
-      border: none;
+      margin-top: 15px;
       font-size: 16px;
+      width: 80%;
     }
-    .info {
-      background: #1abc9c;
-      padding: 10px;
-      border-radius: 5px;
-      margin-top: 20px;
+    h2 {
+      color: #f1c40f;
     }
   </style>
 </head>
 <body>
   <div class="box">
-    <h1>🎉 Redeem Your Reward</h1>
-    <h2>Your Score: <span id="score">0</span> Points</h2>
+    <h2>🎉 Redeem Your Points</h2>
+    <p id="scoreText">Loading...</p>
 
-    <div id="redeemSection" style="display:none;">
-      <h3>Enter your UPI ID to receive ₹</h3>
-      <input type="text" id="upi" placeholder="example@upi" />
-      <button onclick="redeem()">Redeem</button>
-    </div>
+    <input type="text" id="upi" placeholder="Enter your UPI ID" />
+    <br />
+    <button onclick="redeem()">Redeem</button>
 
-    <div class="info">
-      <h3>🧾 How It Works:</h3>
-      <p>🎯 Each correct answer = 100 points</p>
-      <p>🏁 Reach 5000 points to redeem ₹50</p>
-      <p>💸 UPI Payment will be processed manually</p>
-    </div>
+    <p id="message"></p>
+
+    <hr />
+    <p><a href="tutorial.html" style="color: #f39c12;">How to Redeem (Tutorial)</a></p>
   </div>
 
   <script>
     const score = localStorage.getItem("finalScore") || 0;
-    document.getElementById("score").innerText = score;
-
-    if (score >= 5000) {
-      document.getElementById("redeemSection").style.display = "block";
-    }
+    document.getElementById("scoreText").textContent = `Your Score: ${score}`;
 
     function redeem() {
-      const upi = document.getElementById("upi").value.trim();
-      if (!upi) return alert("Please enter a valid UPI ID");
+      const upi = document.getElementById("upi").value;
+      if (!upi.includes("@")) {
+        document.getElementById("message").textContent = "❌ Invalid UPI!";
+        return;
+      }
+      if (score < 5000) {
+        document.getElementById("message").textContent = "⚠️ You need 5000 points to redeem ₹50.";
+        return;
+      }
 
-      // Simulated save (replace with Firebase later)
-      alert("Your request to redeem ₹50 has been submitted!\nUPI ID: " + upi);
+      // Save redeem request (You’ll link this to Firebase next)
+      document.getElementById("message").textContent = "✅ Request submitted! Payment in 24–48 hours.";
     }
   </script>
 </body>
