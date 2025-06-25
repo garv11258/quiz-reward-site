@@ -1,40 +1,19 @@
-
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Quiz</title>
-</head>
-<body>
-  <h2>Quiz Time!</h2>
-  <p id="question">What is 2 + 2?</p>
-  <button onclick="answer(4)">4</button>
-  <button onclick="answer(5)">5</button>
-
-  <script type="module">
-    import { auth, db } from './firebase.js';
-    import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
-    import { doc, updateDoc, increment } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
-
-    let currentUser = null;
-
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        currentUser = user;
-      } else {
-        window.location.href = "login.html";
-      }
-    });
-
-    window.answer = async function (selected) {
-      if (selected === 4 && currentUser) {
-        const userRef = doc(db, "users", currentUser.uid);
-        await updateDoc(userRef, { points: increment(100) });
-        alert("Correct! You earned 100 points.");
-        window.location.href = "dashboard.html";
-      } else {
-        alert("Wrong answer. Try again!");
-      }
+  <title>Quiz Time</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #8e44ad, #3498db);
+      color: #fff;
+      text-align: center;
+      padding: 50px;
+      min-height: 100vh;
     }
-  </script>
-</body>
-</html>
+    h1 {
+      font-size: 40px;
+      margin-bottom: 20px;
+    }
+    #question {
+      font-size: 32
